@@ -1,6 +1,6 @@
 baseURL = 'https://example.org/'
 languageCode = 'en-us'
-title = 'Blog'
+title = "@tlaakkonen's blog"
 theme = 'PaperMod'
 
 [markup]
@@ -24,3 +24,7 @@ defaulttheme = 'light'
 disablethemetoggle = true
 showreadingtime = true
 comments = true
+disablespecial1stpost = true
+
+[params.homeinfoparams]
+title = "Latest posts:"

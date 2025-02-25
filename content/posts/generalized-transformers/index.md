@@ -2,7 +2,6 @@
 title = 'Generalized Transformers from Applicative Functors'
 date = 2025-02-24T19:52:00-05:00
 tags = ['functional programming', 'machine learning']
-author = 'Tuomas Laakkonen'
 ghcommentid = 1
 ghcommentauthors = ['tlaakkonen']
 +++
