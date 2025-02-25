@@ -1,0 +1,14 @@
+{{- /* Comments area start */ -}}
+
+<div id="gh-comments">
+    <br/><br/>
+    <h2 id="gh-comments-title">Comments</h2>
+    <div id="gh-comments-list"></div>
+    <a href="javascript:void(0)" id="gh-load-comments" class="btn" style="display:none">Load more comments</a>
+</div>
+
+<script type="text/javascript" src="{{ .Site.BaseURL }}js/github-comments.js"></script>
+<script type="text/javascript">
+    DoGithubComments({{ $.Params.ghcommentauthors | default slice }}, {{ $.Params.ghcommentid | default 0 }});
+</script>
+{{- /* Comments area end */ -}}

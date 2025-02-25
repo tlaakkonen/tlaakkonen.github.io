@@ -1,0 +1,26 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = 'Blog'
+theme = 'PaperMod'
+
+[markup]
+[markup.goldmark]
+[markup.goldmark.extensions]
+[markup.goldmark.extensions.passthrough]
+enable = true
+[markup.goldmark.extensions.passthrough.delimiters]
+block = [['$$', '$$']]
+inline = [['$', '$']]
+
+
+[markup.highlight]
+style = 'monokailight'
+
+[params]
+math = true
+showtoc = true
+tocopen = true
+defaulttheme = 'light'
+disablethemetoggle = true
+showreadingtime = true
+comments = true

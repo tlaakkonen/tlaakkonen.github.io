@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Blog</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on Blog</description>
+    <generator>Hugo -- 0.144.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 24 Feb 2025 19:52:00 -0500</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Generalized Transformers from Applicative Functors</title>
+      <link>http://localhost:1313/posts/generalized-transformers/</link>
+      <pubDate>Mon, 24 Feb 2025 19:52:00 -0500</pubDate>
+      <guid>http://localhost:1313/posts/generalized-transformers/</guid>
+      <description>&lt;p&gt;Transformers are a machine-learning model at the foundation of many state-of-the-art systems in modern AI, originally proposed in &lt;a href=&#34;https://arxiv.org/abs/1706.03762&#34;&gt;[arXiv:1706.03762]&lt;/a&gt;. In this post, we are going to build a generalization of Transformer models that can operate on (almost) arbitrary structures such as functions, graphs, probability distributions, not just matrices and vectors.&lt;/p&gt;
+&lt;p&gt;We will do this using the language of &lt;em&gt;applicative functors&lt;/em&gt;, and indeed many of the constructions here have similar ideas to those presented in the &lt;a href=&#34;http://strictlypositive.org/IdiomLite.pdf&#34;&gt;original paper&lt;/a&gt; introducing applicative functors by McBride and Paterson, the only difference is that we interpret them in the context of machine learning, rather than in the context of functional programming with effects.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

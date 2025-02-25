@@ -1,0 +1,96 @@
+:root {
+    --main-width: 1080px;
+    --code-block-bg: rgb(245, 245, 245);
+}
+
+.post-entry:active {
+    transform: none !important;
+}
+
+.tag-in-list {
+    background-color: rgb(235, 235, 235);
+    border-radius: 3px;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.gh-comment-header {
+    background-color: rgb(215, 215, 215);
+    border-radius: 3px 3px 0px 0px;
+    padding: 5px;
+}
+
+.gh-comment-header img {
+    display: inline;
+    border-radius: 3px;
+    transform: translateY(2px);
+    margin-right: 5px;
+    width: 24px;
+}
+
+.gh-comment {
+    background-color: rgb(235, 235, 235);
+    margin-bottom: 10px;
+    border-radius: 3px;
+}
+
+.gh-comment-content {
+    padding: 10px;
+}
+
+.gh-comment-content img {
+    max-width: 500px !important;
+    max-height: 500px !important;
+    margin: auto;
+}
+
+.gh-comment-content .emoji {
+    display: inline !important;
+}
+
+.gh-comment-content * {
+    max-width: 100% !important;
+}
+
+.gh-comment-content p {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.gh-comment-content code {
+    overflow: scroll !important;
+}
+
+.gh-comment-content pre {
+    overflow: scroll !important;
+}
+
+.gh-comment-content ul {
+    list-style-position: inside;
+}
+
+.gh-comment-op-tag {
+    color: blue;
+}
+
+#gh-comments-title {
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+#gh-comments-btn {
+    /* color: white; */
+    background-color: var(--tertiary);
+    border-radius: 3px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 20px;
+    font-size: 12pt;
+    float: right;
+    font-weight: bold;
+}
+
+.gh-comment-content .user-mention {
+    font-weight: bold;
+}
