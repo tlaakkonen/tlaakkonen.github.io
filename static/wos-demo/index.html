@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            canvas {
+                position: absolute;
+                top: 10px;
+                left: 10;
+                width: 40vw;
+                height: 40vw;
+            }
+
+            #editor {
+                position: absolute; 
+                top: 10px;
+                left: calc(40vw + 20px);
+                width: calc(100% - 40vw - 30px);
+                height: 40vw;
+            }
+
+            body {
+                background-color: black;
+            }
+
+            button {
+                position: absolute;
+                top: calc(40vw - 20px);
+                left: calc(40vw + 30px);
+                z-index: 100;
+            }
+        </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.40.1/ace.min.js" integrity="sha512-yZCW/4uyGQEinu8VJLwUj/w4hXUGuP027EvOt+wLzI0T3v+2o/UhK6L7dwt2QXYOdcnYAS1yheQk6AzNVdlA5A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    </head>
+    <body>
+
+        <canvas></canvas>
+        <div id="editor">// This is a sandbox for implementing Monte Carlo algorithms for PDEs on the GPU
+// 
+// I've set it up to implement the Walk on Spheres, which is an algorithm
+// to solve the Laplace equation Laplacian(u) = 0, with Dirichlet boundary
+// conditions. 
+//
+// See [1] for a nice introduction, and I've left some exercises 
+// for the reader beneath each function.
+//
+// If you want to mess around with it, value_at_position is where to start.
+// For every position in the range [-1, 1] x [-1, 1], this function
+// is evaluated many times on the GPU, and the average is displayed on screen.
+// If you edit the code, click the 'Compile' button in the bottom left corner
+// to refresh the display.
+//
+// If you're seeing a black screen on the left, it may be that you are using an
+// unsupported browser. Try a recent version of Chrome or Edge - Safari is not
+// supported at all and Firefox is a hit or miss.
+//
+// [1]: https://www.cs.cmu.edu/~kmcrane/Projects/MonteCarloGeometryProcessing/paper.pdf
+
+// Sample the value at a given position.
+// This is the main function of the program, whatever is output here will 
+// be averaged and displayed on screen.
+fn value_at_position(pos: vec2f) -> f32 {
+    // If we are inside the boundary:
+    if distance_to_boundary(pos) > 0.0 {
+        // Then use the Walk on Spheres to solve the Laplace equation
+        let value = walk_on_spheres(pos);
+        return value;
+    } else {
+        // Otherwise just a dummy value
+        return 0.0;
+    }
+}
+
+// Execute the walk on spheres from a given starting point.
+fn walk_on_spheres(starting_pos: vec2f) -> f32 {
+    // Variable to keep track of position on the walk
+    var pos = starting_pos;
+    // Do at most 100 walk steps:
+    for (var i = 0; i < 100; i = i + 1) {
+        // Find out how far away from the boundary we are:
+        let r = distance_to_boundary(pos);
+        
+        // If we are close to the boundary, return the boundary value
+        if r < 0.001 {
+            return boundary_value(pos);
+        }
+        
+        // Otherwise pick a random point on the circle around
+        // the current point and move there.
+        let theta = 2.0 * 3.141592653 * random();
+        pos = pos + r * vec2f(cos(theta), sin(theta));
+    }
+    // If we didn't reach the boundary in 100 steps, just give up
+    return 0.0;
+}
+// CHALLENGE: Read section 2.3 in [1] and modify this to solve
+// the Poisson equation: Laplacian(u) = f for some f you like.
+// CHALLENGE: Read section 2.4 in [1] and modify this to solve
+// the screened Laplace equation: Laplacian(u) - sigma*u = 0.
+// CHALLENGE: Read section 2.5 in [1] and modify this to solve
+// the biharmonic equation Laplacian(Laplacian(u)) = 0
+
+
+// Compute the distance to the boundary.
+// If it's negative, that means you are outside the boundary.
+fn distance_to_boundary(pos: vec2f) -> f32 {
+    // Compute the distance to the unit circle.
+    return 1.0 - length(pos);
+}
+// CHALLENGE: How could you make this a torus instead?
+// SOLUTION: min(1.0 - length(pos), length(pos) - 0.5)
+// CHALLENGE: How about a square?
+// CHALLENGE: The Walk On Spheres still works if the domain is infinite, 
+// modify this function to give the exterior of the unit circle.
+
+// Defines the boundary conditions of the equation.
+// Can be called with any position close to the boundary.
+fn boundary_value(pos: vec2f) -> f32 {
+    // This is set up to make 'stripes' on the boundary
+    // by dividing it up into segments based on X coordinate.
+    if fract(2.5 * pos.x) > 0.5 {
+        return 1.0;
+    } else {
+        return -1.0;
+    }
+}
+// CHALLENGE: Come up with some fun smoothly varying boundary conditions.
+// CHALLENGE: Come up with boundary conditions for which the Walk
+// on Spheres algorithm fails. (Hint: what is the probability of hitting
+// a single point?)
+            </div>
+        <button>Compile</button>
+        <script type="module">
+            const fixed_code = `
+                @group(0) @binding(0) var<storage> means: array<f32>;
+
+                struct Uniforms {
+                    xorshift32_seed: u32,
+                    image_width: u32,
+                    image_height: u32
+                }
+
+                @group(1) @binding(0) var<uniform> uniforms: Uniforms;
+
+                struct Cmap {
+                    scale: f32,
+                    shift: f32,
+                    pos: vec3f,
+                    zero: vec3f,
+                    neg: vec3f
+                }
+
+                @group(2) @binding(0) var<uniform> cmap: Cmap;
+
+                @vertex fn vs(
+                    @builtin(vertex_index) vertexIndex : u32
+                ) -> @builtin(position) vec4f {
+                    let pos = array(
+                        vec2f(-1.0, 1.0),
+                        vec2f(1.0, 1.0),
+                        vec2f(-1.0, -1.0),
+                        vec2f(-1.0, -1.0),
+                        vec2f(1.0, 1.0),
+                        vec2f(1.0, -1.0)
+                    );
+            
+                    return vec4f(pos[vertexIndex], 0.0, 1.0);
+                }
+
+                @fragment fn fs(@builtin(position) screen_pos: vec4f) -> @location(0) vec4f {
+                    let id = vec2u(floor(screen_pos.xy));
+                    let pixel = id.x + id.y * uniforms.image_width;
+                    let value = means[pixel];
+
+                    let t = tanh((value - cmap.shift) / cmap.scale);
+                    var color: vec3f;
+                    if t >= 0.0 {
+                        color = (1.0 - t) * cmap.zero + t * cmap.pos;
+                    } else {
+                        color = (1.0 + t) * cmap.zero - t * cmap.neg;
+                    }
+
+                    return vec4f(color, 1.0);
+                }
+            `;
+
+            const fixed_compute_code = `
+                @group(0) @binding(0) var<storage, read_write> means: array<f32>;
+                @group(0) @binding(1) var<storage, read_write> counts: array<u32>;
+
+                struct Uniforms {
+                    xorshift32_seed: u32,
+                    image_width: u32,
+                    image_height: u32
+                }
+
+                @group(1) @binding(0) var<uniform> uniforms: Uniforms;
+
+                var<private> xorshift32_state: u32 = 0;
+
+                fn seed_xorshift32(id: vec3u) {
+                    xorshift32_state = uniforms.xorshift32_seed * (id.x + uniforms.xorshift32_seed * id.y);
+                    xorshift32();
+                    xorshift32();
+                }
+
+                fn xorshift32() -> u32 {
+                    var x = xorshift32_state;
+                    x = x ^ (x << 13);
+                    x = x ^ (x >> 17);
+                    x = x ^ (x << 5);
+                    xorshift32_state = x;
+                    return x;
+                }
+
+                fn random() -> f32 {
+                    return bitcast<f32>((xorshift32() >> 9) | 0x3f800000) - 1.0;
+                }
+
+                @compute @workgroup_size(64) fn compute(@builtin(global_invocation_id) id: vec3u) {
+                    seed_xorshift32(id);
+                    
+                    if id.x > uniforms.image_width || id.y > uniforms.image_height {
+                        return;
+                    }
+
+                    let pos = vec2f(
+                        2.0 * (f32(id.x) / f32(uniforms.image_width)) - 1.0,
+                        2.0 * (f32(id.y) / f32(uniforms.image_height)) - 1.0
+                    );
+
+                    for (var i = 0; i < 32; i = i + 1) {
+                        let value = value_at_position(pos);
+                        let pixel = id.x + uniforms.image_width * id.y;
+                        let count = f32(counts[pixel]);
+                        means[pixel] = (count * means[pixel] + value) / (count + 1.0);
+                        counts[pixel] = counts[pixel] + 1;
+                    }
+                }
+            `;
+
+            async function main(editor, compileButton) {
+                const adapter = await navigator.gpu?.requestAdapter();
+                const device = await adapter?.requestDevice();
+                if (!device) {
+                    console.error('need a browser that supports WebGPU');
+                    return;
+                }
+
+                const canvas = document.querySelector('canvas');
+                const devicePixelRatio = window.devicePixelRatio;
+                canvas.width = canvas.clientWidth * devicePixelRatio;
+                canvas.height = canvas.clientHeight * devicePixelRatio;
+                const context = canvas.getContext('webgpu');
+                const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
+                context.configure({
+                    device,
+                    format: presentationFormat,
+                });
+
+                const uniformImBuffer = device.createBuffer({
+                    size: 4 * 3,
+                    usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+                });
+                const uniformImValues = new Uint32Array(3);
+
+                const uniformCmapBuffer = device.createBuffer({
+                    size: 4 * 16,
+                    usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+                });
+                const uniformCmapValues = new Float32Array(16);
+                uniformCmapValues.set([1.0, 0.0, 0.0/*PAD*/, 0.0/*PAD*/, 0.0, 0.0, 1.0, 0.0/*PAD*/, 1.0, 1.0, 1.0, 0.0/*PAD*/, 1.0, 0.0, 0.0, 0.0/*PAD*/]);
+                device.queue.writeBuffer(uniformCmapBuffer, 0, uniformCmapValues);
+
+                const module = device.createShaderModule({
+                    label: 'full screen quad shader',
+                    code: fixed_code
+                });
+
+                const pipeline = device.createRenderPipeline({
+                    label: 'pipeline',
+                    layout: 'auto',
+                    vertex: {
+                        module,
+                    },
+                    fragment: {
+                        module,
+                        targets: [{ format: presentationFormat }],
+                    }
+                });          
+
+                const bindGroupIm = device.createBindGroup({
+                    layout: pipeline.getBindGroupLayout(1),
+                    entries: [
+                        { binding: 0, resource: { buffer: uniformImBuffer }},
+                    ],
+                });
+
+                const bindGroupCmap = device.createBindGroup({
+                    layout: pipeline.getBindGroupLayout(2),
+                    entries: [
+                        { binding: 0, resource: { buffer: uniformCmapBuffer }},
+                    ],
+                });
+
+                const meansBuffer = device.createBuffer({
+                    size: 4 * canvas.width * canvas.height,
+                    usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST
+                });
+
+                const countsBuffer = device.createBuffer({
+                    size: 4 * canvas.width * canvas.height,
+                    usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST
+                });
+
+                const bindGroupMCR = device.createBindGroup({
+                    layout: pipeline.getBindGroupLayout(0),
+                    entries: [
+                        { binding: 0, resource: { buffer: meansBuffer }}
+                    ]
+                });
+
+                const allZeros = new Uint32Array(canvas.width * canvas.height);
+                allZeros.fill(0);
+
+                var computePipeline;
+                var bindGroupMC;
+                var bindGroupImC;
+                async function recompileShader() {
+                    const module = device.createShaderModule({
+                            label: 'compute shader',
+                            code: fixed_compute_code + editor.getValue(),
+                    });
+                    
+                    function truncateMessage(message) {
+                        if (message.length <= 100) {
+                            return message;
+                        }
+
+                        message = message.slice(0,100);
+                        let lines = message.split("\n");
+                        if (lines.length <= 1) {
+                            return message + "\n...";
+                        } else {
+                            return lines.slice(0,-1).join("\n") + "\n...";
+                        }
+                    }
+                    const info = await module.getCompilationInfo();
+                    let annotations = info.messages.map(function(msg) {
+                        return { 
+                            row: Math.max(msg.lineNum - 29, 0), 
+                            column: msg.linePos,
+                            type: msg.type, 
+                            text: truncateMessage(msg.message)
+                        };
+                    });
+                    editor.getSession().setAnnotations(annotations);
+                    if (info.messages.some((msg) => msg.type === "error")) {
+                        return;
+                    }
+                    
+                    computePipeline = device.createComputePipeline({
+                        label: 'compute pipeline',
+                        layout: 'auto',
+                        compute: { module },
+                    });
+
+                    bindGroupMC = device.createBindGroup({
+                        layout: computePipeline.getBindGroupLayout(0),
+                        entries: [
+                            { binding: 0, resource: { buffer: meansBuffer }},
+                            { binding: 1, resource: { buffer: countsBuffer }},
+                        ],
+                    });
+
+                    bindGroupImC = device.createBindGroup({
+                        layout: computePipeline.getBindGroupLayout(1),
+                        entries: [
+                            { binding: 0, resource: { buffer: uniformImBuffer }},
+                        ],
+                    });
+
+                    device.queue.writeBuffer(meansBuffer, 0, allZeros);
+                    device.queue.writeBuffer(countsBuffer, 0, allZeros);
+                }
+
+                await recompileShader();
+                compileButton.addEventListener('click', recompileShader);
+
+                function computePass() {
+                    uniformImValues.set([(Math.random()*4294967296)>>>0, canvas.width, canvas.height]);
+                    device.queue.writeBuffer(uniformImBuffer, 0, uniformImValues);
+
+                    const encoder = device.createCommandEncoder({
+                        label: 'compute encoder',
+                    });
+                    const pass = encoder.beginComputePass({
+                        label: 'compute pass',
+                    });
+                    pass.setPipeline(computePipeline);
+                    pass.setBindGroup(0, bindGroupMC);
+                    pass.setBindGroup(1, bindGroupImC);
+                    pass.dispatchWorkgroups(Math.ceil(canvas.width / 64), canvas.height);
+                    pass.end();
+
+                    const commandBuffer = encoder.finish();
+                    device.queue.submit([commandBuffer]);
+                }
+
+                const renderPassDescriptor = {
+                    label: 'canvas output renderpass',
+                    colorAttachments: [
+                        {
+                            clearValue: [1.0, 1.0, 1.0, 1],
+                            loadOp: 'clear',
+                            storeOp: 'store',
+                        },
+                    ],
+                }; 
+
+                function render() {
+                    uniformImValues.set([(Math.random()*4294967296)>>>0, canvas.width, canvas.height]);
+                    device.queue.writeBuffer(uniformImBuffer, 0, uniformImValues);
+
+                    renderPassDescriptor.colorAttachments[0].view =
+                        context.getCurrentTexture().createView();
+                    
+                    const encoder = device.createCommandEncoder({ label: 'our encoder' });
+                    
+                    const pass = encoder.beginRenderPass(renderPassDescriptor);
+                    pass.setPipeline(pipeline);
+                    pass.setBindGroup(0, bindGroupMCR);
+                    pass.setBindGroup(1, bindGroupIm);
+                    pass.setBindGroup(2, bindGroupCmap);
+                    pass.draw(6);
+                    pass.end();
+                
+                    const commandBuffer = encoder.finish();
+                    device.queue.submit([commandBuffer]);
+                }
+
+                function frame() {
+                    render();
+                    requestAnimationFrame(frame);
+                }
+
+                frame();
+
+                setInterval(computePass, 30);
+            }
+
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/monokai");
+            editor.setFontSize(16);
+            editor.session.setMode("ace/mode/rust");
+            var compileButton = document.querySelector("button");
+            main(editor, compileButton);
+        </script>
+    </body>
+</html>
