@@ -194,7 +194,7 @@ fn boundary_value(pos: vec2f) -> f32 {
 
                 @group(1) @binding(0) var<uniform> uniforms: Uniforms;
                 var<private> xorshift32_state: u32 = 0;
-                var<private> walks_per_frame: u32 = 32;
+                var<private> walks_per_frame: u32 = 1;
 
                 fn seed_xorshift32(id: vec3u) {
                     xorshift32_state = uniforms.xorshift32_seed * (id.x + uniforms.xorshift32_seed * id.y);
