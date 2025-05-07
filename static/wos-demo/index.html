@@ -32,7 +32,6 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.40.1/ace.min.js" integrity="sha512-yZCW/4uyGQEinu8VJLwUj/w4hXUGuP027EvOt+wLzI0T3v+2o/UhK6L7dwt2QXYOdcnYAS1yheQk6AzNVdlA5A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     </head>
     <body>
-
         <canvas></canvas>
         <div id="editor">// This is a sandbox for implementing Monte Carlo algorithms for PDEs on the GPU
 // 
@@ -194,8 +193,8 @@ fn boundary_value(pos: vec2f) -> f32 {
                 }
 
                 @group(1) @binding(0) var<uniform> uniforms: Uniforms;
-
                 var<private> xorshift32_state: u32 = 0;
+                var<private> walks_per_frame: u32 = 32;
 
                 fn seed_xorshift32(id: vec3u) {
                     xorshift32_state = uniforms.xorshift32_seed * (id.x + uniforms.xorshift32_seed * id.y);
@@ -228,7 +227,7 @@ fn boundary_value(pos: vec2f) -> f32 {
                         2.0 * (f32(id.y) / f32(uniforms.image_height)) - 1.0
                     );
 
-                    for (var i = 0; i < 32; i = i + 1) {
+                    for (var i: u32 = 0; i < walks_per_frame; i = i + 1) {
                         let value = value_at_position(pos);
                         let pixel = id.x + uniforms.image_width * id.y;
                         let count = f32(counts[pixel]);
@@ -347,7 +346,7 @@ fn boundary_value(pos: vec2f) -> f32 {
                     const info = await module.getCompilationInfo();
                     let annotations = info.messages.map(function(msg) {
                         return { 
-                            row: Math.max(msg.lineNum - 29, 0), 
+                            row: Math.max(msg.lineNum - 54, 0), 
                             column: msg.linePos,
                             type: msg.type, 
                             text: truncateMessage(msg.message)
