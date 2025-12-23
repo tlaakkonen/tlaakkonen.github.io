@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>@tlaakkonen's blog</title>
+        <link rel="stylesheet" href="/static/base.css" />
+    </head>
+    <body>
+        <nav>
+            <a href="/">Home</a>
+        </nav>
+        <hr/>
+
+        <main>
+            <h2>Latest Posts</h2>
+            {%- for post in posts | sort(attribute='age', reverse=True) %}
+                <section>
+                    <h3><a href="/posts/{{ post.id }}.html">{{ post.meta.title }}</a></h3>
+                    {% include 'post_meta' %}
+                </section>
+            {%- endfor %}
+        </main>
+
+        {% include 'footer' %}
+    </body>
+</html>

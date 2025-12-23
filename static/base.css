@@ -1,0 +1,297 @@
+body {
+    color: #e7eef5;
+    background-color: #0d1117;
+    font-family: sans-serif;
+    font-size: 1.1rem;
+}
+
+body {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+footer {
+    margin-bottom: 10px;
+}
+
+nav {
+    margin-top: 10px;
+}
+
+@media only screen and (min-width: 1000px) {
+    body {
+        width: 1000px;
+        margin: 0 auto;
+    }
+}
+
+a:link, a:visited {
+    color: inherit;
+    text-decoration-color: #64B5F6;
+    text-decoration-thickness: 0.15rem;
+}
+
+section {
+    padding: 20px;
+    padding-top: 0px;
+    margin-bottom: 20px;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+}
+
+.footnote-definition {
+    border: 1px solid #828082;
+    border-radius: 3px;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+.footnote-definition > p {
+    display: inline;
+    margin: 0;
+}
+
+.footnote-definition > .footnote-definition-label {
+    vertical-align: baseline;
+    font-size: inherit;
+    color: #828082;
+}
+
+.footnote-definition > sup::after {
+    content: ':';
+    margin-right: 0.25em;
+}
+
+/* Figure rendering */
+
+svg {
+    fill: #c9d1d9;
+}
+
+svg, img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+figure {
+    margin: 10px;
+}
+
+figcaption {
+    text-align: center;
+    padding: 5px;
+}
+
+figcaption::before {
+    content: 'Figure: ';
+    font-style: italic;
+}
+
+
+/* MathML rendering */
+
+@font-face {
+    font-family: "Fira Math";
+    src: url("fonts/FiraMath-Regular.otf");
+}
+
+math {
+    font-family: "Fira Math", serif;
+}
+
+math[display="block"] {
+    font-size: 1.1em;
+}
+
+
+/* Code blocks */
+
+pre {
+    counter-reset: line;
+    overflow-x: scroll;
+    padding: 0px 5px;
+    font-size: .9em;
+}
+
+pre a-lf::before {
+    counter-increment: line;
+    content: counter(line, decimal-leading-zero);
+    display: inline-block;
+    color: #828082;
+    border-right: 1px solid #999;
+    margin-right: 10px;
+    margin-top: -5px;
+    padding-right: 5px;
+    padding-top: 5px;
+}
+
+pre a-lf:first-child::before {
+    margin-top: 0px;
+}
+
+pre a-lf:last-child::before {
+    padding-bottom: 5px;
+}
+
+code:not(pre code) {
+    background-color: #121824;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+/* Syntax highlighting */
+
+a-fb, a-m, a-pr, a-t, a-tb, a-tf, a-tq, a-tr, a-tu {
+    color: #78dce8
+}
+
+a-ch, a-cs, a-rx, a-s, a-tt {
+    color: #ffd866
+}
+
+a-st, a-tt {
+    font-weight: 700
+}
+
+a-cb, a-co, a-n, a-se, a-ss, a-vb {
+    color: #ab9df2
+}
+
+a-da, a-f, a-fc, a-fd, a-fm {
+    color: #a9dc76
+}
+
+a-cn, a-dd, a-dr, a-ex, a-in, a-k, a-kc, a-kd, a-ke, a-kf, a-ki, a-km, a-ko, a-kp, a-kr, a-kt, a-ky, a-l, a-o, a-pp, a-ps, a-rp, a-sc, a-td, a-te, a-tg {
+    color: #ff6188
+}
+
+a-p, a-pb, a-pd, a-sp, a-tl, a-v, a-vm {
+    color: #fcfcfa
+}
+
+a-vp {
+    color: #fc9867
+}
+
+a-c, a-cd {
+    color: #828082
+}
+
+a-em {
+    font-style: italic
+}
+
+a-tu {
+    text-decoration: underline
+}
+
+a-tx {
+    text-decoration: line-through
+}
+
+/* Comments section */
+
+.gh-comment-header {
+    background-color: rgb(37, 49, 66);
+    border-radius: 3px 3px 0px 0px;
+    padding: 5px;
+}
+
+.gh-comment-header img {
+    display: inline;
+    border-radius: 3px;
+    transform: translateY(2px);
+    margin-right: 5px;
+    width: 24px;
+}
+
+.gh-comment {
+    background-color: rgb(19, 25, 34);
+    margin-bottom: 10px;
+    border-radius: 3px;
+}
+
+.gh-comment-content {
+    padding: 10px;
+}
+
+.gh-comment-content img {
+    max-width: 500px !important;
+    max-height: 500px !important;
+    margin: auto;
+}
+
+.gh-comment-content .emoji {
+    display: inline !important;
+}
+
+.gh-comment-content * {
+    max-width: 100% !important;
+}
+
+.gh-comment-content p {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.gh-comment-content code {
+    overflow: scroll !important;
+}
+
+.gh-comment-content pre {
+    overflow: scroll !important;
+}
+
+.gh-comment-content ul {
+    list-style-position: inside;
+}
+
+.gh-comment-op-tag {
+    color: #64B5F6;
+}
+
+#gh-comments-title-line {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#gh-comments-title {
+    margin: 0;
+    display: inline-block;
+}
+
+#gh-comments-btn {
+    height: 100%;
+    font-weight: bold;
+    display: inline;
+    vertical-align: baseline;
+}
+
+.gh-comment-content .user-mention {
+    font-weight: bold;
+}
+
+#gh-load-comments {
+    padding: 10px;
+    margin-top: 10px;
+    color: inherit;
+    background-color: inherit;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+#gh-load-comments:active {
+    background-color: rgba(255, 255, 255, 0.2);
+}

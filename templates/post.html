@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{{ post.meta.title }}</title>
+        <link rel="stylesheet" href="/static/base.css" />
+    </head>
+    <body>
+        <div id="container">
+            <nav>
+                <a href="/">Home</a> &gt; Posts &gt; {{ post.meta.title }}
+            </nav>
+            <hr/>
+            <header>
+                <h1>{{ post.meta.title }}</h1>
+                {% include 'post_meta' %}
+            </header>
+            <br/>
+            <main>
+                <article>
+                    {{ post.source }}
+                </article>
+            </main>
+
+
+            {% if post.meta.ghcomment is defined %}
+                <div id="gh-comments">
+                    <br/><br/>
+                    <div id="gh-comments-title-line">
+                        <h2 id="gh-comments-title">Comments</h2>
+                    </div>
+                    <div id="gh-comments-list"></div>
+                    <button id="gh-load-comments" style="visibility: hidden;">Load more comments</a>
+                </div>
+
+                <script type="text/javascript" src="/static/comments.js"></script>
+                <script type="text/javascript">
+                    DoGithubComments({{ post.meta.ghcomment[1] }}, {{ post.meta.ghcomment[0] }});
+                </script>
+            {% endif %}
+
+            {% include 'footer' %}
+        </div>
+    </body>
+</html>

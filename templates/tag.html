@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>@tlaakkonen's blog</title>
+        <link rel="stylesheet" href="/static/base.css" />
+    </head>
+    <body>
+        <nav>
+            <a href="/">Home</a> &gt; Tags &gt; {{ tag }}
+        </nav>
+        <hr/>
+
+        <main>
+            <h2>Posts Tagged: {{ tag }}</h2>
+            {%- for post in posts | sort(attribute='age', reverse=True) %}
+                {% if tag in post.meta.tags %}
+                    <section>
+                        <h3><a href="/posts/{{ post.id }}.html">{{ post.meta.title }}</a></h3>
+                        {% include 'post_meta' %}
+                    </section>
+                {% endif %}
+            {%- endfor %}
+        </main>
+
+        {% include 'footer' %}
+    </body>
+</html>

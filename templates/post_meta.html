@@ -1,0 +1,1 @@
+Published: {{ post.meta.date | format_datetime }} &nbsp; &nbsp; Tags: {%- for tag in post.meta.tags %} <a href="/tags/{{tag | urlencode}}.html">{{ tag }}</a>{% if not loop.last %}, {% endif %} {%- endfor %}
