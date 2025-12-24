@@ -35,7 +35,7 @@ jobs:
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Compile static-site-gen
-        run: cargo install --git https://github.com/tlaakkonen/static-site-gen.git
+        run: cargo install --no-default-features --git https://github.com/tlaakkonen/static-site-gen.git
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5

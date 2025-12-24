@@ -37,13 +37,17 @@ function DoGithubComments(author_list, comment_id, page_id) {
     fetch(api_comments_url, {
         headers: { "Accept": "application/vnd.github.v3.html+json" }
     }).then(async function(response) {
+        if (response.status == 404) {
+            document.getElementById("gh-comments-list").append("Comments are not open for this post yet.");
+            return
+        }
+
         let comments = await response.json();
         // Add post button to first page
         if (page_id == 1) {
             document.getElementById("gh-comments-title")
                 .insertAdjacentHTML("afterend", `<a href='${url}#new_comment_field' target='_blank' rel='nofollow' id='gh-comments-btn'>Post a comment on Github</a>`);
         }
-            
 
         // Individual comments
         for (let comment of comments) {
