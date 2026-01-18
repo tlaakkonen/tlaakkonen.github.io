@@ -1,6 +1,17 @@
+:root {
+    --bg: #091f2c;
+    --primary: #f5b1cc;
+    --secondary: #a288d9;
+    --tertiary: #93e8d3;
+    --secondary-soft: color-mix(in srgb, var(--tertiary), var(--secondary) 70%);
+    --alt: #071823;
+    --error: #e45c96;
+    --success: #00b398;
+}
+
 body {
-    color: #e7eef5;
-    background-color: #0d1117;
+    color: var(--tertiary);
+    background-color: var(--bg);
     font-family: sans-serif;
     font-size: 1.1rem;
 }
@@ -21,7 +32,20 @@ footer {
 }
 
 nav {
+    color: var(--tertiary);
     margin-top: 10px;
+}
+
+hr {
+    border-color: var(--tertiary);
+}
+
+header {
+    color: var(--primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary);
 }
 
 @media only screen and (min-width: 1000px) {
@@ -33,7 +57,7 @@ nav {
 
 a:link, a:visited {
     color: inherit;
-    text-decoration-color: #64B5F6;
+    text-decoration-color: var(--secondary);
     text-decoration-thickness: 0.15rem;
 }
 
@@ -92,6 +116,7 @@ figcaption {
 
 figcaption::before {
     content: 'Figure: ';
+    color: var(--secondary-soft);
     font-style: italic;
 }
 
@@ -105,6 +130,7 @@ figcaption::before {
 
 math {
     font-family: "Fira Math", serif;
+    color: var(--success);
 }
 
 math[display="block"] {
@@ -125,8 +151,8 @@ pre a-lf::before {
     counter-increment: line;
     content: counter(line, decimal-leading-zero);
     display: inline-block;
-    color: #828082;
-    border-right: 1px solid #999;
+    color: color-mix(in srgb, var(--primary), var(--bg) 10%);
+    border-right: 1px solid var(--tertiary);
     margin-right: 10px;
     margin-top: -5px;
     padding-right: 5px;
@@ -142,7 +168,8 @@ pre a-lf:last-child::before {
 }
 
 code:not(pre code) {
-    background-color: #121824;
+    background-color: var(--alt);
+    color: var(--secondary-soft);
     padding: 2px 5px;
     border-radius: 4px;
 }
@@ -150,11 +177,11 @@ code:not(pre code) {
 /* Syntax highlighting */
 
 a-fb, a-m, a-pr, a-t, a-tb, a-tf, a-tq, a-tr, a-tu {
-    color: #78dce8
+    color: var(--secondary-soft);
 }
 
 a-ch, a-cs, a-rx, a-s, a-tt {
-    color: #ffd866
+    color: var(--primary);
 }
 
 a-st, a-tt {
@@ -162,27 +189,27 @@ a-st, a-tt {
 }
 
 a-cb, a-co, a-n, a-se, a-ss, a-vb {
-    color: #ab9df2
+    color: var(--secondary);
 }
 
 a-da, a-f, a-fc, a-fd, a-fm {
-    color: #a9dc76
+    color: var(--success);
 }
 
 a-cn, a-dd, a-dr, a-ex, a-in, a-k, a-kc, a-kd, a-ke, a-kf, a-ki, a-km, a-ko, a-kp, a-kr, a-kt, a-ky, a-l, a-o, a-pp, a-ps, a-rp, a-sc, a-td, a-te, a-tg {
-    color: #ff6188
+    color: var(--error);
 }
 
 a-p, a-pb, a-pd, a-sp, a-tl, a-v, a-vm {
-    color: #fcfcfa
+    color: var(--tertiary)
 }
 
 a-vp {
-    color: #fc9867
+    color: var(--primary);
 }
 
 a-c, a-cd {
-    color: #828082
+    color: var(--success);
 }
 
 a-em {
