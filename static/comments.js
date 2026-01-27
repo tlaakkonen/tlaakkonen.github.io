@@ -37,11 +37,11 @@ function DoGithubComments(author_list, comment_id, page_id) {
     fetch(api_comments_url, {
         headers: { "Accept": "application/vnd.github.v3.html+json" }
     }).then(async function(response) {
-        if (response.status == 404) {
+        if (response.status != 200) {
             document.getElementById("gh-comments-list").append("Comments are not open for this post yet.");
             return
         }
-
+        
         let comments = await response.json();
         // Add post button to first page
         if (page_id == 1) {

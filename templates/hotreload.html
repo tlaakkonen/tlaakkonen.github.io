@@ -1,0 +1,20 @@
+{% if dev_mode %}
+    <script>
+        function doHotReload() {
+            fetch('/hotreload').then((response) => {
+                if (response.status === 200) {
+                    console.log('reload requested')
+                    window.location.reload()
+                } else {
+                    setTimeout(doHotReload, 5000);
+                }
+            }).catch((err) => {
+                console.log("error when long-polling hotreload, trying again in 5 seconds")
+                console.log(err)
+                setTimeout(doHotReload, 5000);
+            });
+        }
+        
+        doHotReload();
+    </script>
+{% endif %}
