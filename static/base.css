@@ -18,8 +18,9 @@ body {
 
 body {
     display: flex;
-    width: 100%;
-    min-height: calc(100vh - 30px);
+    width: calc(100% - 16px);
+    margin: 0 8px;
+    min-height: 100dvh;
     flex-direction: column;
 }
 
@@ -61,7 +62,7 @@ h1, h2, h3, h4, h5, h6 {
 
 @media only screen and (min-width: 1000px) {
     body {
-        width: 1000px;
+        width: calc(1000px - 16px);
         margin: 0 auto;
     }
 }
@@ -78,6 +79,7 @@ section {
     margin-bottom: 20px;
     border: 1px solid currentColor;
     border-radius: 4px;
+    width: calc(100% - 40px);
 }
 
 .footnote-definition {
@@ -146,6 +148,8 @@ math {
 
 math[display="block"] {
     font-size: 1.1em;
+    overflow-x: scroll;
+    overflow-y: hidden;
 }
 
 mtable {
