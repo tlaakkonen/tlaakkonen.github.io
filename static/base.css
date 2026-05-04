@@ -112,6 +112,10 @@ svg {
     fill: #c9d1d9;
 }
 
+svg.tikz {
+    fill: #000;
+}
+
 svg, img {
     display: block;
     margin: 0 auto;
